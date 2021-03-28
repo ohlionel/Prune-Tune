@@ -42,9 +42,9 @@ get_seeded_random()
 }
 
 random_source=`date +%N`
-gshuf --random-source=<(get_seeded_random $random_source) \
+shuf --random-source=<(get_seeded_random $random_source) \
     $DATA_PATH/train.en.txt > $DATA_PATH/train.en.shuf
-gshuf --random-source=<(get_seeded_random $random_source) \
+shuf --random-source=<(get_seeded_random $random_source) \
     $DATA_PATH/train.de.txt > $DATA_PATH/train.de.shuf
 
 mv $DATA_PATH/train.en.shuf $TRAIN_SRC
