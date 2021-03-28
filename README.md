@@ -1,27 +1,28 @@
 # Prune-Tune
-Official code repository for AAAI2021 paper Finding Sparse Structures for Domain Specific Neural Machine Translation
+Official code repository for AAAI2021 paper:
+
+[Finding Sparse Structures for Domain Specific Neural Machine Translation](https://arxiv.org/abs/2012.10586)
+
+[Here](https://ohlionel.github.io/project/Prune-Tune/) is a brief introduction of Prune-Tune.
 
 This project is based on [Neurst](https://github.com/bytedance/neurst), an open source Neural Speech Translation Toolkit. 
 
 Here is an example to train a general model for En-De Translation, then adapt to a target domain(novel) via Prune-Tune.
 
-[Paper](https://arxiv.org/abs/2012.10586)
-
-[Project Page](https://ohlionel.github.io/project/Prune-Tune/)
 ## Neurst Installation
 Install from source:
 ```
 git clone https://github.com/ohlionel/Prune-Tune.git
 cd Prune-Tune/neurst/
-pip3 install -e .
+pip3 install -r requirements.txt
 ```
 please see installation details in [Neurst](https://github.com/ohlionel/Prune-Tune/tree/main/neurst)
 
 ## Data Preprocess
 We use two datasets:
-|     |   |
+|   Domain  |  Dataset |
 |  ----  | ----  | 
-| General Domain  | WMT14(En-De) | 
+| General Domain   | WMT14(En-De) | 
 | Target Domain  | [Novel Dataset](https://opus.nlpl.eu/Books.php) from OPUS |
 
 
