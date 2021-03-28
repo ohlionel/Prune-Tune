@@ -5,7 +5,9 @@ This project is based on [Neurst](https://github.com/bytedance/neurst), an open 
 
 Here is an example to train a general model for En-De Translation, then adapt to a target domain(novel) via Prune-Tune.
 
+[Paper](https://arxiv.org/abs/2012.10586)
 
+[Project Page](https://ohlionel.github.io/project/Prune-Tune/)
 ## Neurst Installation
 Install from source:
 ```
