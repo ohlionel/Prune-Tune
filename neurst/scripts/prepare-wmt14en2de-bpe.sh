@@ -29,7 +29,7 @@ CLEAN=$1/scripts/training/clean-corpus-n.perl
 NORM_PUNC=$1/scripts/tokenizer/normalize-punctuation.perl
 REMOVE_NON_PRINT_CHAR=$1/scripts/tokenizer/remove-non-printing-char.perl
 
-DATA_PATH=wmt14_en_de
+DATA_PATH=data/wmt14_en_de
 mkdir -p ${DATA_PATH}
 DATA_PATH="$( cd "$DATA_PATH" && pwd )"
 

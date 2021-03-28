@@ -18,7 +18,7 @@ THIS_DIR="$( cd "$( dirname "$0" )" && pwd )"
 
 pip3 install -e $THIS_DIR/../ --no-deps
 
-DATA_PATH=wmt14_en_de
+DATA_PATH=data/wmt14_en_de
 mkdir -p ${DATA_PATH}
 DATA_PATH="$( cd "$DATA_PATH" && pwd )"
 

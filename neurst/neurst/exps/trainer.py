@@ -14,6 +14,9 @@
 import os
 from distutils.version import LooseVersion
 
+import numpy as np
+import pickle
+
 import tensorflow as tf
 from absl import logging
 
@@ -25,6 +28,7 @@ from neurst.models.model_utils import summary_model_variables
 from neurst.optimizers import OPTIMIZER_REGISTRY_NAME, build_optimizer
 from neurst.optimizers.schedules import LR_SCHEDULE_REGISTRY_NAME, build_lr_schedule
 from neurst.sparsity.pruning_optimizer import create_pruning_optimizer
+from neurst.sparsity.partial_tuning_optimizer import create_partial_tuning_optimizer
 from neurst.sparsity.pruning_schedule import PolynomialDecay, PruningSchedule, build_pruning_schedule
 from neurst.training import (CustomCheckpointCallback, LearningRateScheduler, MetricReductionCallback, Validator,
                              build_validator, training_utils)
@@ -58,6 +62,25 @@ class Trainer(BaseExperiment):
         else:
             self._pretrain_v2 = False
             self._pretrain_model = flatten_string_list(args["pretrain_model"])
+            if args["mask_dir"]:
+                self.mask_dir = args["mask_dir"][0]
+                # print(self.mask_dir)
+                # self.load_mask = np.load(self.mask_dir, allow_pickle=True)
+                with open(self.mask_dir, 'rb') as f:
+                    self.load_mask = pickle.load(f)
+                # i = 0
+                # for weight in self.load_mask:
+                #     if  i <= 1000:
+                #         tf.print(weight.name, output_stream='file://./mask.txt')
+                #         if weight.shape.ndims > 0:
+                #             tf.print(weight[:1], output_stream='file://./mask.txt', summarize=-1, name=weight.name) 
+                #         else:
+                #             tf.print(weight, output_stream='file://./mask.txt', summarize=-1, name=weight.name) 
+                #     else:
+                #         i += 1
+            else:
+                self.mask_dir = os.path.join(self.model_dir, "mask.pkl")
+                self.load_mask = None
             if self._pretrain_model:
                 if self._pretrain_variable_pattern is None:
                     self._pretrain_variable_pattern = [None] * len(self._pretrain_model)
@@ -86,6 +109,7 @@ class Trainer(BaseExperiment):
         self._experimental_count_batch_num = args["experimental_count_batch_num"]
         self._freeze_variables = args["freeze_variables"]
         self._pruning_schedule = build_pruning_schedule(args)
+        self._partial_tuning = args["partial_tuning"]
         self._pruning_variable_pattern = args["pruning_variable_pattern"]
         self._nopruning_variable_pattern = args["nopruning_variable_pattern"]
 
@@ -133,6 +157,16 @@ class Trainer(BaseExperiment):
             Flag("nopruning_variable_pattern", dtype=Flag.TYPE.STRING, default=None,
                  help="The regular expression that indicates the variables will NOT be pruned "
                       "(will take effect if `pruning_variable_pattern`=None)."),
+            Flag("partial_tuning", dtype=Flag.TYPE.BOOLEAN, default=False,
+                 help="Train partial weights according to mask"),
+            Flag("mask_dir", dtype=Flag.TYPE.STRING, default=None, multiple=True,
+                 help="The path to a pretrained model directory(a seq2seq model, bert model, etc.). "
+                      "(V2) Or a json/yaml-like dict string indicating pretrained models from "
+                      "either neurst checkpoints or publicly available models converted "
+                      "by neurst.utils.converters. Each entry has the elements: "
+                      "path, model_name, from_prefix, to_prefix, name_pattern. "
+                      "Multiple pretrain models are also available."),
+
         ]
 
     def _restore_ckpt_or_pretrain(self):
@@ -235,6 +269,8 @@ class Trainer(BaseExperiment):
                                                            pruning_variable_pattern=self._pruning_variable_pattern,
                                                            nopruning_variable_pattern=self._nopruning_variable_pattern,
                                                            keep_prune_property=True)
+            if self._partial_tuning is True:
+                self._optimizer = create_partial_tuning_optimizer(self._optimizer, self.model, self.load_mask)
             self._optimizer = training_utils.handle_fp16_and_distributed_optimizer(
                 self._optimizer, self._lr_schedule, self._hvd_backend)
             if self._hvd_backend is None:
@@ -283,6 +319,18 @@ class Trainer(BaseExperiment):
                 cnt += 1
             logging.info(f"Total {cnt} batches per EPOCH.")
 
+
+        # i = 0
+        # for weight in keras_model.weights:
+        #     if  i <= 1000:
+        #         tf.print(weight.name, output_stream='file://./before.txt')
+        #         if weight.shape.ndims > 0:
+        #             tf.print(weight[:1], output_stream='file://./before.txt', summarize=-1, name=weight.name) 
+        #         else:
+        #             tf.print(weight, output_stream='file://./before.txt', summarize=-1, name=weight.name) 
+        #     else:
+        #         i += 1
+
         history = keras_model.fit(
             map_data_for_keras(tfds.repeat()),
             initial_epoch=0,
@@ -291,3 +339,34 @@ class Trainer(BaseExperiment):
             verbose=2,
             callbacks=training_callbacks)
         logging.info(history.history)
+
+        if self._pruning_schedule is not None:
+            mask = [
+                tf.Variable(
+                    (tf.cast(tf.math.not_equal(weight, 0.), weight.dtype.base_dtype)),
+                    dtype=weight.dtype.base_dtype,
+                    trainable=False,
+                    synchronization=tf.VariableSynchronization.ON_READ,
+                    aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA) for weight in keras_model.trainable_weights
+            ]
+            # np.save(self.mask_dir, mask)
+            with open(self.mask_dir, 'wb') as f:
+                pickle.dump(mask, f)
+
+        if self._partial_tuning is True:
+            mask = self.load_mask
+            # np.save(self.mask_dir, mask)
+            saved_mask_dir = os.path.join(self.model_dir, "mask.pkl")
+            with open(saved_mask_dir, 'wb') as f:
+                pickle.dump(mask, f)
+
+        # i = 0
+        # for weight in keras_model.weights:
+        #     if i <= 1000:
+        #         tf.print(weight.name, output_stream='file://./after.txt')
+        #         if weight.shape.ndims > 0:
+        #             tf.print(weight[:1], output_stream='file://./after.txt', summarize=-1, name=weight.name)
+        #         else:
+        #             tf.print(weight, output_stream='file://./before.txt', summarize=-1, name=weight.name) 
+        #     else:
+        #         i += 1
