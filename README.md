@@ -35,6 +35,9 @@ By runing with
 ```
 cd neurst
 bash ./scripts/prepare-wmt14en2de-wp.sh
+
+cd data
+unzip novel.zip
 cp data/wmt14_en_de/vocab data/novel/
 bash ./scripts/prepare-novel-wp.sh
 ```
@@ -63,6 +66,7 @@ Note: It may take a few hours to complete data preprocess.
 ## Train the General Domain Model
 We can directly use the yaml-style configuration files generated above to train a general domain model on WMT14(En-De).
 ```bash
+cd neurst
 python3 -m neurst.cli.run_exp \
     --config_paths data/wmt14_en_de/training_args.yml,data/wmt14_en_de/translation_wordpiece.yml,data/wmt14_en_de/validation_args.yml \
     --hparams_set transformer_big \
