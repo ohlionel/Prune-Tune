@@ -68,7 +68,7 @@ python3 -m neurst.cli.run_exp \
     --hparams_set transformer_big \
     --model_dir models/benchmark_big
 ```
-
+You may use `CUDA_VISIBLE_DEVICES` flag to run on sepecific gpu devices.
 ## Prune the General Domain Model 
 We can simply prune a model with Neurst, see [Weight Pruning](https://github.com/ohlionel/Prune-Tune/tree/main/neurst/examples/weight_pruning) for details.
 ```bash
