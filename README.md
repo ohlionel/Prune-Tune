@@ -38,7 +38,7 @@ bash ./scripts/prepare-wmt14en2de-wp.sh
 cp data/wmt14_en_de/vocab data/novel/
 bash ./scripts/prepare-novel-wp.sh
 ```
-we will get the preprocessed training data and raw testsets under directory `data/wmt14_en_de/` and `data/novel`, i.e.
+we will get the preprocessed training data and raw testsets under directory `data/wmt14_en_de/` and `data/novel`: 
 ```bash
 data/wmt14_en_de/
 ├── vocab  # wordpiece codes
@@ -58,12 +58,13 @@ data/wmt14_en_de/
     ├── ...
 ├── ...
 ```
+Note: It may take a few hours to complete data preprocess.
 
 ## Train the General Domain Model
 We can directly use the yaml-style configuration files generated above to train a general domain model on WMT14(En-De).
 ```bash
 python3 -m neurst.cli.run_exp \
-    --config_paths data/wmt14_en_de/training_args.yml,data/wmt14_en_de/translation_bpe.yml,data/wmt14_en_de/validation_args.yml \
+    --config_paths data/wmt14_en_de/training_args.yml,data/wmt14_en_de/translation_wordpiece.yml,data/wmt14_en_de/validation_args.yml \
     --hparams_set transformer_big \
     --model_dir models/benchmark_big
 ```
