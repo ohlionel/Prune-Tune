@@ -96,7 +96,7 @@ for loopid in $(seq 1 ${LOOP}); do
     ! [[ -f FAILED ]]
 done
 
-cp $THIS_DIR/training_args.yml $DATA_PATH/training_args.yml
+# cp $THIS_DIR/training_args.yml $DATA_PATH/training_args.yml
 
 cat $THIS_DIR/validation_args.yml | \
     sed "s#DEV_SRC#$DATA_PATH/dev.en#" | \
@@ -132,3 +132,14 @@ task.params:
     subtokenizer_codes: $DATA_PATH/vocab
     vocab_path: $DATA_PATH/vocab
 " > $DATA_PATH/translation_wordpiece.yml
+
+echo "
+entry.class: trainer
+entry.params:
+  train_steps: 20000
+  summary_steps: 200
+  save_checkpoint_steps: 1000
+  criterion.class: label_smoothed_cross_entropy
+  criterion.params:
+    label_smoothing: 0.1
+" > $DATA_PATH/training_args.yml
