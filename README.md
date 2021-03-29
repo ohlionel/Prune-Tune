@@ -37,7 +37,7 @@ cd neurst
 bash ./scripts/prepare-wmt14en2de-wp.sh
 
 cd data
-unzip novel.zip
+tar zxvf novel.zip
 cp data/wmt14_en_de/vocab data/novel/
 bash ./scripts/prepare-novel-wp.sh
 ```
