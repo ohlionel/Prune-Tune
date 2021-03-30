@@ -34,7 +34,7 @@ Target Domain: [Novel Dataset](https://opus.nlpl.eu/Books.php) from OPUS -->
 By runing with
 ```
 cd neurst
-# Download wmt14 en2de dataset, learn wordpiece vocabulary, and preprosse data.
+# Download wmt14 en2de dataset, learn wordpiece vocabulary, and preprocess data.
 bash ./scripts/prepare-wmt14en2de-wp.sh 
 
 cd data
@@ -43,7 +43,7 @@ tar -zxvf novel.zip
 cd ..
 # Use the wordpiece vocabulary learned above.
 cp data/wmt14_en_de/vocab data/novel/ 
-# Preprosse novel data.
+# Preprocess novel data.
 bash ./scripts/prepare-novel-wp.sh 
 ```
 we will get the preprocessed training data and raw testsets under directory `data/wmt14_en_de/` and `data/novel`: 
