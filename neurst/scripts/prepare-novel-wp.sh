@@ -99,6 +99,8 @@ done
 # cp $THIS_DIR/training_args.yml $DATA_PATH/training_args.yml
 
 cat $THIS_DIR/validation_args.yml | \
+    sed "s#STR_EVL#0#" | \
+    sed "s#EVL_STEP#400#" | \
     sed "s#DEV_SRC#$DATA_PATH/dev.en#" | \
     sed "s#DEV_TRG#$DATA_PATH/dev.de#" > $DATA_PATH/validation_args.yml
 
@@ -136,7 +138,7 @@ task.params:
 echo "
 entry.class: trainer
 entry.params:
-  train_steps: 20000
+  train_steps: 10000
   summary_steps: 200
   save_checkpoint_steps: 1000
   criterion.class: label_smoothed_cross_entropy

@@ -99,6 +99,8 @@ done
 cp $THIS_DIR/training_args.yml $DATA_PATH/training_args.yml
 
 cat $THIS_DIR/validation_args.yml | \
+    sed "s#STR_EVL#5000#" | \
+    sed "s#EVL_STEP#1000#" | \
     sed "s#DEV_SRC#$DATA_PATH/newstest2013.en.txt#" | \
     sed "s#DEV_TRG#$DATA_PATH/newstest2013.de.txt#" > $DATA_PATH/validation_args.yml
 

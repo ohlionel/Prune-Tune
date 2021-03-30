@@ -5,8 +5,8 @@ validator.params:
     src_file: DEV_SRC
     trg_file: DEV_TRG
   eval_batch_size: 64
-  eval_start_at: 5000
-  eval_steps: 1000
+  eval_start_at: STR_EVL
+  eval_steps: EVL_STEP
   eval_criterion: label_smoothed_cross_entropy
   eval_search_method: beam_search
   eval_search_method.params:
@@ -15,5 +15,5 @@ validator.params:
     maximum_decode_length: 160
     extra_decode_length: 50
   eval_metric: bleu
-  eval_top_checkpoints_to_keep: 10
+  eval_top_checkpoints_to_keep: 5
   eval_auto_average_checkpoints: True

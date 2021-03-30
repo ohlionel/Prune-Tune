@@ -34,12 +34,17 @@ Target Domain: [Novel Dataset](https://opus.nlpl.eu/Books.php) from OPUS -->
 By runing with
 ```
 cd neurst
-bash ./scripts/prepare-wmt14en2de-wp.sh
+# Download wmt14 en2de dataset, learn wordpiece vocabulary, and preprosse data.
+bash ./scripts/prepare-wmt14en2de-wp.sh 
 
 cd data
-tar zxvf novel.zip
-cp data/wmt14_en_de/vocab data/novel/
-bash ./scripts/prepare-novel-wp.sh
+# Unzip novel dataset
+tar -zxvf novel.zip 
+cd ..
+# Use the wordpiece vocabulary learned above.
+cp data/wmt14_en_de/vocab data/novel/ 
+# Preprosse novel data.
+bash ./scripts/prepare-novel-wp.sh 
 ```
 we will get the preprocessed training data and raw testsets under directory `data/wmt14_en_de/` and `data/novel`: 
 ```bash
@@ -92,7 +97,7 @@ python3 -m neurst.cli.run_exp \
     --begin_pruning_step 0 \
     --end_pruning_step 5000 \
     --pruning_frequency 100 \
-    --nopruning_variable_pattern "(ln/gamma)|(ln/beta)|(modalit)" 
+    --nopruning_variable_pattern "(ln/gamma)|(ln/beta)|(modalit)"  # No pruning to LayerNorm/Embedding Layers
 ```
 We will get the pruned model `models/sparsity_10` in which 10% of parameters is pruned. `sparsity_10/mask.pkl` save all binary pruning masks, where 0 indicates zero-value pruned weight.
 
@@ -128,6 +133,16 @@ python3 -m neurst.cli.run_exp \
     --mask_dir models/sparsity_10/mask.pkl \
     --apply_mask
 ```
+
+## Checkpoints Download
+
+|#|Model| Pre-trained Model | Dataset | Approach | Train Steps | WMT_BLEU | TEST_BLEU | Download Links|
+|----|----|:----:|:----:|:----:|:----:|:----:|:----:|:----:|
+|1|benchmark_big	|-|	wmt14|	training from scratch|	500000	|28.46|	-| [benchmark_big.tar.gz](https://drive.google.com/file/d/1a8YWn9fMT7VEV1Oh-S9WS9Z6kxeVdIBw/view?usp=sharing) |	
+2 | sparsity_10	|#1|	wmt14|	gradual pruning|	10000|	28.49|	-| [benchmark_big.tar.gz](https://drive.google.com/file/d/1EGVACputsPdoiPcgw5oiWWKkMOn_2WCo/view?usp=sharing) |	
+3	|sparsity_10_iwslt|	#2|	iwslt14	|partial tuning	|10000|	28.49|	31.34	| [benchmark_big.tar.gz](https://drive.google.com/file/d/1SthoHiv7p_O926TeBzDArn_ZbwDgsWru/view?usp=sharing) |
+4|	sparsity_10_emea	|#2	|emea	|partial tuning	|10000|	28.49	|30.85| [benchmark_big.tar.gz](https://drive.google.com/file/d/13fbgJLgJkHoK1CKEmbPDi6L6x3GPGkRU/view?usp=sharing) |
+5	|sparsity_10_novel|	#2	|novel|	partial tuning	|10000|	28.49	|24.19|[benchmark_big.tar.gz](https://drive.google.com/file/d/17y6vxBr7tVXqDjahlKOwdTBTA1AjmMPW/view?usp=sharing) |
 
 ## Citation
 Please consider citing our paper in your publications if the project helps your research. BibTeX reference is as follows.
