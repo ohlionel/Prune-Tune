@@ -23,7 +23,7 @@ We use two datasets:
 |   Domain  |  Dataset |
 |  ----  | ----  | 
 | General Domain   | WMT14(En-De) | 
-| Target Domain  | [Novel Dataset](https://opus.nlpl.eu/Books.php) from OPUS |
+| Target Domain  | Novel Dataset from [OPUS](https://opus.nlpl.eu/Books.php) |
 
 
 <!-- 
