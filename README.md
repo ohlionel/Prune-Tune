@@ -11,7 +11,7 @@ Here is an example to train a general model for En-De Translation, then adapt to
 
 ## Neurst Installation
 Install from source:
-```
+```bash
 git clone https://github.com/ohlionel/Prune-Tune.git
 cd Prune-Tune/neurst/
 pip3 install -r requirements.txt
@@ -32,17 +32,17 @@ General Domain: WMT14(En-De)
 Target Domain: [Novel Dataset](https://opus.nlpl.eu/Books.php) from OPUS -->
 
 By runing with
-```
+```bash
+# Download wmt14(en2de) dataset, learn wordpiece vocabulary, and preprocess data.
 cd neurst
-# Download wmt14 en2de dataset, learn wordpiece vocabulary, and preprocess data.
 bash ./scripts/prepare-wmt14en2de-wp.sh 
 
-cd data
 # Unzip novel dataset
-tar -zxvf novel.zip 
-cd ..
+tar -zxvf data/novel.zip -C data/ 
+
 # Use the wordpiece vocabulary learned above.
 cp data/wmt14_en_de/vocab data/novel/ 
+
 # Preprocess novel data.
 bash ./scripts/prepare-novel-wp.sh 
 ```
