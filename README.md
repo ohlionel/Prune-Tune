@@ -19,11 +19,11 @@ pip3 install -r requirements.txt
 please see installation details in [Neurst](https://github.com/ohlionel/Prune-Tune/tree/main/neurst)
 
 ## Data Preprocess
-We use two datasets:
-|   Domain  |  Dataset |
-|  ----  | ----  | 
-| General Domain   | WMT14(En-De) | 
-| Target Domain  | Novel Dataset from [OPUS](https://opus.nlpl.eu/Books.php) |
+Datasets:
+|   Domain  |  Dataset | Download|
+|  ----  | ----  | :----:|
+| General Domain   | WMT14(En-De) | Automatic |
+| Target Domain  | Novel/EMEA/IWSLT14 | [Link](https://github.com/ohlionel/Prune-Tune/tree/main/neurst/data)
 
 
 <!-- 
@@ -38,13 +38,13 @@ cd neurst
 bash ./scripts/prepare-wmt14en2de-wp.sh 
 
 # Unzip novel dataset
-tar -zxvf data/novel.zip -C data/ 
+tar -zxvf data/novel.tar.gz -C data/ 
 
 # Use the wordpiece vocabulary learned above.
 cp data/wmt14_en_de/vocab data/novel/ 
 
 # Preprocess novel data.
-bash ./scripts/prepare-novel-wp.sh 
+bash ./scripts/prepare-target-dataset-wp.sh novel
 ```
 we will get the preprocessed training data and raw testsets under directory `data/wmt14_en_de/` and `data/novel`: 
 ```bash
